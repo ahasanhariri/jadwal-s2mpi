@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Kuliah & Agenda Akademik — S2 MPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red: #e0202e;
+    --red-soft: #fde9ea;
+    --ink: #1a1a1a;
+    --ink-soft: #767676;
+    --border: #e8e8e8;
+    --surface: #ffffff;
+    --bg: #ffffff;
+    --page-bg: #e9eaed;
+    --dark-btn: #2b2b2e;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ background: var(--page-bg); }
+
+  body{
+    margin:0;
+    background: var(--page-bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    padding: 22px 16px 140px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; }
+
+  /* ---------- page shell (rounded top & bottom) ---------- */
+  .page-shell{
+    max-width: 1160px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.08);
+  }
+
+  /* ---------- top nav ---------- */
+  .navbar{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .navbar .logo{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: clamp(14px, 2.4vw, 18px);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .navbar .logo img{
+    height: 34px;
+    width: auto;
+    display:block;
+    flex-shrink: 0;
+  }
+  .navbar .logo span{ color: var(--red); }
+  .navbar nav{
+    display:flex;
+    gap: 26px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .navbar nav a{ text-decoration:none; cursor:pointer; }
+  .navbar nav a:hover{ color: var(--ink); }
+
+  @media (max-width: 700px){
+    .navbar nav{ display:none; }
+  }
+
+  /* ---------- breadcrumb ---------- */
+  .breadcrumb{
+    max-width: 1100px;
+    margin: 20px auto 0;
+    padding: 0 32px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .breadcrumb .current{ color: var(--ink); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    max-width: 1100px;
+    margin: 28px auto 0;
+    padding: 0 32px;
+  }
+  .hero h1{
+    font-size: clamp(24px, 3.4vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+  }
+  .fact-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 24px;
+    margin-bottom: 26px;
+    max-width: 640px;
+  }
+  .fact-grid .fact{
+    font-size: 15px;
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .fact-grid .fact::before{
+    content:'';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--ink-soft);
+    flex-shrink:0;
+  }
+
+  .stat-row{
+    display:flex;
+    align-items:baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .stat-row .stat{
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--red);
+    letter-spacing: -0.02em;
+  }
+  .stat-row .stat small{ font-size: 18px; font-weight: 600; }
+  .stat-row .stat-note{
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .pill-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .pill{
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 999px;
+  }
+  .pill.green{
+    background: var(--red-soft);
+    color: var(--red);
+    border: 1px solid #f7c2c6;
+  }
+  .pill.outline{
+    border: 1px solid var(--border);
+    color: var(--ink);
+  }
+
+  .hero-divider{
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 0 22px;
+  }
+
+  .info-row{
+    display:flex;
+    align-items:center;
+    gap: 26px;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+    font-size: 14.5px;
+  }
+  .info-row .info-label{
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .info-item{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    color: var(--ink);
+  }
+  .info-item .tag-icon{
+    color: var(--red);
+    font-size: 15px;
+  }
+  .info-item a{
+    text-decoration: underline;
+    color: var(--ink);
+    font-size: 13.5px;
+    margin-left: 4px;
+  }
+
+  /* ---------- section container ---------- */
+  .section{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 0 20px;
+  }
+  .section-head h2{
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .section-head .count{ font-size: 13px; color: var(--ink-soft); }
+
+  /* ---------- class selector (variant swatches) ---------- */
+  .variant-row{
+    display:flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .variant-btn{
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 10px 22px;
+    border-radius: 10px;
+    cursor:pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .variant-btn.active{
+    border-color: var(--red);
+    color: var(--red);
+    background: var(--red-soft);
+  }
+
+  .class-panel{ display:none; }
+  .class-panel.active{ display:block; }
+
+  .day-block{ margin-bottom: 30px; }
+  .day-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .day-title h3{ font-size: 15px; font-weight: 700; margin: 0; }
+  .day-title .day-total{ font-size: 12.5px; color: var(--ink-soft); }
+
+  .course-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .course-top{ display:flex; gap: 14px; align-items: flex-start; }
+  .time-col{
+    flex-shrink: 0;
+    width: 78px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    padding-top: 2px;
+  }
+  .body-col{ flex: 1; min-width: 0; }
+  .course-row{ display:flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .course-name{ font-size: 15.5px; font-weight: 700; line-height: 1.35; }
+  .credit-tag{
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--red);
+    background: var(--red-soft);
+    padding: 3px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+    border: 1px solid #f7c2c6;
+  }
+  .lect-toggle{
+    margin-top: 10px;
+    display: inline-flex; align-items:center; gap: 5px;
+    border: none; background: none;
+    color: var(--red);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 0; cursor: pointer;
+  }
+  .lect-toggle:hover{ text-decoration: underline; }
+  .lect-toggle .chev{ display:inline-block; transition: transform .18s ease; font-size:10px; transform: translateY(-1px); }
+  .course-card.open .lect-toggle .chev{ transform: rotate(180deg) translateY(1px); }
+  .lecturers{
+    overflow:hidden; max-height:0; opacity:0;
+    color: var(--ink-soft); line-height:1.6; font-size:13.5px;
+    transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+    border-top: 1px dashed var(--border);
+  }
+  .course-card.open .lecturers{ max-height:140px; opacity:1; margin-top:10px; padding-top:10px; }
+  .lecturers .lead{ color: var(--ink); font-weight:700; }
+  .lecturers > div{ font-weight:700; color: var(--ink); }
+
+  .break-row{
+    display:flex; align-items:center; gap:10px;
+    padding: 8px 18px; margin-bottom:10px;
+    color: var(--ink-soft); font-size: 12.5px;
+  }
+  .break-row .line{ flex:1; height:1px; background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 11px); }
+
+  /* ---------- keterangan notes box ---------- */
+  .notes-box{
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+  }
+  .notes-title{ font-weight: 700; font-size: 15px; margin-bottom: 10px; }
+  .notes-list{ margin: 0; padding-left: 20px; }
+  .notes-list li{ font-size: 14px; color: var(--ink); line-height: 1.6; margin-bottom: 4px; }
+  .notes-list li:last-child{ margin-bottom: 0; }
+  #agenda .notes-box{ margin-top: 28px; }
+
+  /* ---------- info button (i) & info box ---------- */
+  .info-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--red);
+    background: #fff;
+    color: var(--red);
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 800;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+    vertical-align: middle;
+    margin: 0 3px;
+    padding: 0;
+    transition: background .15s ease, color .15s ease;
+  }
+  .info-btn:hover{ background: var(--red); color: #fff; }
+  .info-btn-onpill{
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+    margin-left: 5px;
+    margin-right: -4px;
+    border-color: var(--red);
+    vertical-align: 1px;
+  }
+  .info-box{
+    overflow:hidden;
+    max-height: 0;
+    opacity: 0;
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    font-weight: 400;
+    color: var(--ink);
+    transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease, padding .25s ease;
+  }
+  .info-box.open{
+    max-height: 220px;
+    opacity: 1;
+    margin-top: 8px;
+    padding: 10px 14px;
+  }
+  .info-box strong{ display:block; font-size: 13px; margin-bottom: 4px; color: var(--ink); }
+  .info-box p{ font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); margin:0; }
+  .legend-dot{
+    display:inline-block; width:9px; height:9px; border-radius:50%;
+    background: var(--red); margin-right: 4px;
+  }
+
+  /* ---------- agenda tracker ---------- */
+  .agenda-timeline{ position: relative; padding-left: 28px; }
+  .agenda-timeline::before{
+    content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background: var(--border);
+  }
+  .agenda-item{ position: relative; padding-bottom: 18px; }
+  .agenda-item:last-child{ padding-bottom: 0; }
+  .agenda-item::before{
+    content:''; position:absolute; left:-28px; top:4px; width:11px; height:11px;
+    border-radius:50%; background: var(--surface); border: 2px solid var(--border);
+  }
+  .agenda-item.milestone::before{ background: var(--red); border-color: var(--red); }
+  .agenda-item.this-week::before{
+    background: #16a34a; border-color: #16a34a;
+    box-shadow: 0 0 0 4px rgba(22,163,74,0.15);
+  }
+  .agenda-item.this-week .agenda-activity{ color: #16a34a; }
+
+  /* ---------- "pekan ini" badge & blink text ---------- */
+  .week-badge{
+    display:inline-flex;
+    align-items:center;
+    gap: 4px;
+    background: #e8f7ee;
+    color: #16a34a;
+    border: 1px solid #b7ebc7;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .week-badge .info-btn{
+    border-color: #16a34a;
+    color: #16a34a;
+  }
+  .week-badge .info-btn:hover{ background:#16a34a; color:#fff; }
+
+  @keyframes blinkText{
+    0%, 49%{ opacity: 1; }
+    50%, 100%{ opacity: 0.15; }
+  }
+  .blink-text{
+    animation: blinkText 1s steps(1, end) infinite;
+    font-weight: 800;
+  }
+  .agenda-item.done::before{
+    background: #9ca0a8; border-color: #9ca0a8;
+    content: '✓'; color:#fff; font-size: 8px; font-weight:900;
+    display:flex; align-items:center; justify-content:center; line-height:1;
+  }
+  .agenda-item.done .agenda-activity{ color: var(--ink-soft); font-weight:600; }
+  .agenda-item.done .agenda-date{ color: #a9aab0; }
+  .agenda-item.done .agenda-note{ color: #a9aab0; }
+  .agenda-row{ display:flex; justify-content: space-between; align-items:baseline; gap:14px; flex-wrap: wrap; }
+  .agenda-date{ font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+  .agenda-activity{ font-size: 14.5px; font-weight: 700; }
+  .agenda-item.milestone .agenda-activity{ color: var(--red); }
+  .agenda-note{ margin-top: 3px; font-size: 12.5px; color: var(--ink-soft); }
+
+  /* ---------- view panels (jadwal vs kalender) ---------- */
+  .view-panel{ display:none; }
+  .view-panel.active{ display:block; }
+
+  /* ---------- view slider / pemisah ---------- */
+  .view-slider-wrap{
+    max-width: 1100px;
+    margin: 8px auto 40px;
+    padding: 0 32px;
+    display:flex;
+    justify-content:center;
+  }
+  .view-slider{
+    position: relative;
+    display:flex;
+    width: 100%;
+    max-width: 460px;
+    background: #f4f4f4;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px;
+  }
+  .view-slider-thumb{
+    position:absolute;
+    top:5px; left:5px;
+    width: calc(50% - 5px);
+    height: calc(100% - 10px);
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  .view-slider.kalender .view-slider-thumb{
+    transform: translateX(100%);
+  }
+  .view-slider-btn{
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    padding: 11px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color .2s ease;
+    white-space: nowrap;
+  }
+  .view-slider-btn.active{ color: var(--red); }
+  @media (max-width: 480px){
+    .view-slider-btn{ font-size: 12px; padding: 11px 6px; }
+  }
+
+  footer.page-footer{
+    text-align:center;
+    margin-top: 50px;
+    padding: 26px 32px;
+    font-size: 12.5px;
+    color: #b9bac0;
+    background: var(--dark-btn);
+  }
+
+  /* ---------- sticky buy bar ---------- */
+  .buy-bar{
+    position: fixed;
+    left:0; right:0;
+    bottom: 46px;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -6px 18px rgba(0,0,0,0.05);
+    padding: 14px 32px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 20px;
+    z-index: 20;
+    flex-wrap: wrap;
+  }
+  .buy-bar .buy-info .buy-total{
+    color: var(--red); font-weight: 800; font-size: 18px;
+  }
+  .buy-bar .buy-info .buy-sub{ font-size: 12.5px; color: var(--ink-soft); margin-top:2px; }
+  .buy-bar .buy-actions{ display:flex; gap: 10px; }
+  .btn{
+    font-family:'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .btn-dark{ background: var(--dark-btn); color:#fff; }
+  .btn-red{ background: var(--red); color:#fff; }
+  .btn:hover{ opacity: 0.92; }
+
+  /* ---------- download dropdown ---------- */
+  .download-wrap{ position: relative; }
+  .download-menu{
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    padding: 8px;
+    width: 230px;
+    display: none;
+    z-index: 30;
+  }
+  .download-menu.open{ display:block; }
+  .download-menu .dm-label{
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 6px 10px 4px;
+  }
+  .download-menu button{
+    width: 100%;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .download-menu button:hover{ background: var(--red-soft); color: var(--red); }
+  .download-menu button .dm-tag{
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  .download-menu button:hover .dm-tag{ color: var(--red); }
+  .download-menu a.dm-link{
+    width: 100%;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .download-menu a.dm-link:hover{ background: var(--red-soft); color: var(--red); }
+  .download-menu a.dm-link:hover .dm-tag{ color: var(--red); }
+  .download-menu hr{
+    border:none; border-top: 1px solid var(--border); margin: 6px 4px;
+  }
+  @media (max-width: 480px){
+    .download-menu{ right: -16px; width: 210px; }
+  }
+
+  /* ---------- cookie notice ---------- */
+  .cookie-bar{
+    position: fixed;
+    left:0; right:0; bottom:0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 10px 32px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 21;
+  }
+  .cookie-bar a{ text-decoration: underline; color: var(--ink); }
+  .cookie-bar .close-x{
+    border:none; background:none; font-size: 16px; cursor:pointer; color: var(--ink-soft); flex-shrink:0;
+  }
+  .cookie-bar.hidden{ display:none; }
+
+  @media (max-width: 480px){
+    .course-top{ flex-direction: column; gap:4px; }
+    .time-col{ width:auto; }
+    .fact-grid{ grid-template-columns: 1fr; }
+    .buy-bar{ padding: 12px 16px; }
+    .buy-bar .buy-actions{ width:100%; }
+    .buy-bar .buy-actions .btn{ flex:1; justify-content:center; }
+    .cookie-bar{ flex-direction: column; align-items: flex-start; padding: 10px 16px 34px; }
+    .cookie-bar .close-x{ position:absolute; top:8px; right:12px; }
+  }
+
+  /* ==================================================
+     MOBILE FRIENDLY — general tightening for small screens
+     ================================================== */
+  @media (max-width: 700px){
+    body{ padding: 12px 8px 150px; }
+    .page-shell{ border-radius: 18px; }
+
+    .navbar{ padding: 14px 18px; }
+    .navbar .logo img{ height: 26px; }
+
+    .breadcrumb{ padding: 0 18px; font-size: 12.5px; flex-wrap: wrap; }
+
+    .hero{ padding: 0 18px; margin-top: 20px; }
+    .hero h1{ margin-bottom: 14px; }
+
+    .fact-grid{ grid-template-columns: 1fr; row-gap: 8px; margin-bottom: 20px; }
+    .fact-grid .fact{ font-size: 13.5px; }
+
+    .stat-row{ gap: 10px; margin-bottom: 12px; }
+    .stat-row .stat{ font-size: 30px; }
+    .stat-row .stat small{ font-size: 15px; }
+    .stat-row .stat-note{ font-size: 12.5px; }
+
+    .pill{ font-size: 12px; padding: 6px 13px; }
+
+    .info-row{ gap: 14px 20px; margin-bottom: 30px; font-size: 13px; }
+    .info-row .info-label{ font-size: 14.5px; width: 100%; }
+
+    .section{ padding: 0 18px; }
+    .section-head h2{ font-size: 17px; }
+
+    .variant-row{ gap: 8px; }
+    .variant-btn{ flex: 1 1 auto; text-align:center; padding: 10px 14px; font-size: 13.5px; }
+
+    .day-title h3{ font-size: 14px; }
+    .course-card{ padding: 13px 14px; }
+    .course-row{ flex-wrap: wrap; }
+    .course-name{ font-size: 14.5px; }
+    .credit-tag{ font-size: 11px; padding: 3px 9px; }
+
+    .notes-box{ padding: 15px 16px; }
+
+    .agenda-timeline{ padding-left: 22px; }
+    .agenda-activity{ font-size: 13.5px; }
+    .agenda-date{ font-size: 12px; }
+
+    .view-slider-wrap{ padding: 0 18px; margin: 6px auto 30px; }
+    .view-slider{ max-width: 100%; }
+
+    footer.page-footer{ padding: 20px 18px; font-size: 12px; }
+
+    .buy-bar{ flex-direction: column; align-items: stretch; gap: 10px; bottom: 40px; }
+    .buy-bar .buy-info{ text-align:center; }
+    .buy-bar .buy-actions{ flex-direction: column; }
+    .buy-bar .buy-actions .btn{ width:100%; }
+    .download-wrap{ width:100%; }
+    .download-menu{ left: 0; right: 0; width: 100%; }
+  }
+
+  @media (max-width: 380px){
+    .navbar .logo{ font-size: 12.5px; gap:6px; }
+    .navbar .logo img{ height: 22px; }
+    .stat-row .stat{ font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-shell">
+
+  <div class="navbar">
+    <div class="logo"><img src="https://uibbc.ac.id/wp-content/uploads/2026/03/cropped-UIbbc-logotype-1.png" alt="Logo Universitas Islam Bunga Bangsa Cirebon" onerror="this.style.display='none'">e-Campus Pascasarjana UIBBC<span>.</span></div>
+    <nav>
+      <a href="#jadwal">Jadwal Kuliah</a>
+      <a href="#agenda">Agenda Akademik</a>
+      <a href="#keterangan">Keterangan</a>
+    </nav>
+  </div>
+
+  <div class="breadcrumb">
+    <span>Beranda</span> <span>›</span> <span>Prodi S2 MPI</span> <span>›</span> <span class="current">Semester I 2026/2027</span>
+  </div>
+
+  <div class="hero">
+    <h1>Jadwal Kuliah & Agenda Akademik — Prodi S2 Manajemen Pendidikan Islam</h1>
+
+    <div class="fact-grid">
+      <div class="fact">Semester I, Tahun Akademik 2026/2027</div>
+      <div class="fact">3 kelas paralel — A, B, C</div>
+      <div class="fact">Perkuliahan Jumat & Sabtu</div>
+      <div class="fact">Blended learning (daring & luring)</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">12 <small>SKS</small></div>
+      <div class="stat-note">per minggu (4 mata kuliah wajib)</div>
+    </div>
+
+    <div class="pill-row">
+      <span class="pill green">Blended Learning
+        <button type="button" class="info-btn info-btn-onpill" onclick="event.stopPropagation(); toggleInfoBox('info-blended-hero')" aria-label="Info blended learning">i</button>
+      </span>
+      <span class="pill outline">16 Pertemuan / Semester</span>
+    </div>
+    <div class="info-box" id="info-blended-hero">
+      <strong>Apa itu Blended Learning?</strong>
+      <p>Blended learning adalah model pembelajaran yang memadukan sesi tatap muka (luring) di kampus dengan sesi pembelajaran daring (online) melalui platform digital. Mahasiswa mengikuti sebagian pertemuan secara langsung di kelas dan sebagian lainnya secara virtual, sehingga proses perkuliahan lebih fleksibel tanpa mengurangi kualitas interaksi dengan dosen.</p>
+    </div>
+
+    <hr class="hero-divider">
+
+    <div class="info-row">
+      <span class="info-label">Info</span>
+      <span class="info-item"><span class="tag-icon">🏷</span> Ketentuan perkuliahan <a href="#keterangan">Lihat keterangan</a></span>
+      <span class="info-item"><span class="tag-icon">🏷</span> Kalender akademik lengkap <a href="#agenda">Lihat agenda</a></span>
+    </div>
+  </div>
+
+  <!-- ===================== JADWAL KELAS ===================== -->
+  <div class="view-panel active" id="view-jadwal">
+  <div class="section" id="jadwal">
+    <div class="section-head">
+      <h2>Jadwal kuliah per kelas</h2>
+      <span class="count">Pilih kelas</span>
+    </div>
+
+    <div class="variant-row">
+      <button class="variant-btn active" onclick="showClass('A', this)">Kelas A</button>
+      <button class="variant-btn" onclick="showClass('B', this)">Kelas B</button>
+      <button class="variant-btn" onclick="showClass('C', this)">Kelas C</button>
+    </div>
+
+    <!-- KELAS A -->
+    <div class="class-panel active" id="panel-A">
+      <div class="day-block">
+        <div class="day-title"><h3>Jumat</h3><span class="day-total">14.00–19.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">14.00<br>16.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Educational Quality Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Assoc. Prof. Dr. Rohidin, M.Pd</div>
+                <div>Dr. H. Pendi Sutanto, M.Pd</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>16.30–16.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">16.45<br>19.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Change Leadership</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Prof. Rhenald Kasali, Ph.D <span style="font-weight:400;">(Seminar di Rumah Perubahan)</span></div>
+                <div>Dr. H. Amin Haedari, M.Pd.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-block">
+        <div class="day-title"><h3>Sabtu</h3><span class="day-total">13.00–18.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">13.00<br>15.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Philosophy of Educational Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div>Prof. Dr. H. Cecep Sumarna, M.Ag</div>
+                <div>Dr. Firman Nugraha, M.Ag</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>15.30–15.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">15.45<br>18.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Research Methodology</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Dr. Nur Khafid, S.Th.I, M.Sc</div>
+                <div>Assoc. Prof. Dr. Iman Subasman, M.Si</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KELAS B -->
+    <div class="class-panel" id="panel-B">
+      <div class="day-block">
+        <div class="day-title"><h3>Jumat</h3><span class="day-total">14.00–19.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">14.00<br>16.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Educational Quality Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Prof. Dr. Hj. Neti Karnati, M.Pd</div>
+                <div>Dr. H. Amin Haedari, M.Pd</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>16.30–16.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">16.45<br>19.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Philosophy of Educational Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div>Prof. Dr. H. Cecep Sumarna, M.Ag</div>
+                <div>Assoc. Prof. Dr. Imam Tabroni, M.Pd.I</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-block">
+        <div class="day-title"><h3>Sabtu</h3><span class="day-total">13.00–18.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">13.00<br>15.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Change Leadership</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Prof. Rhenald Kasali, Ph.D <span style="font-weight:400;">(Seminar di Rumah Perubahan)</span></div>
+                <div>Dr. Firman Nugraha, M.Ag</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>15.30–15.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">15.45<br>18.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Research Methodology</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Dr. Nur Khafid, S.Th.I, M.Sc</div>
+                <div>Assoc. Prof. Dr. Dian Widiantari, M.Ag</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KELAS C -->
+    <div class="class-panel" id="panel-C">
+      <div class="day-block">
+        <div class="day-title"><h3>Jumat</h3><span class="day-total">14.00–19.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">14.00<br>16.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Philosophy of Educational Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div>Assoc. Prof. Dr. Imam Tabroni, M.Pd.I</div>
+                <div>Dr. H. Casta, M.Pd</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>16.30–16.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">16.45<br>19.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Research Methodology</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Dr. Nur Khafid, S.Th.I, M.Sc</div>
+                <div>Assoc. Prof. Dr. Dian Widiantari, M.Ag</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-block">
+        <div class="day-title"><h3>Sabtu</h3><span class="day-total">13.00–18.15</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">13.00<br>15.30</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Educational Quality Management</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div class="lead">Prof. Dr. Hj. Neti Karnati, M.Pd</div>
+                <div>Dr. H. Asro'i, M.Pd</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="break-row"><span>15.30–15.45</span><div class="line"></div><span>Istirahat</span></div>
+
+        <div class="course-card">
+          <div class="course-top">
+            <div class="time-col">15.45<br>18.15</div>
+            <div class="body-col">
+              <div class="course-row"><div class="course-name">Change Leadership</div><div class="credit-tag">3 SKS</div></div>
+              <button class="lect-toggle" onclick="toggleLect(this)"><span class="btn-label">Lihat dosen</span><span class="chev">▾</span></button>
+              <div class="lecturers">
+                <div>Prof. Rhenald Kasali, Ph.D <span style="font-style:italic;">(Seminar di Rumah Perubahan)</span></div>
+                <div>Dr. H. Aceng Abdul Azis, M.Pd</div>
+                <div>Hj. Khodijah Huliyah, M.Si, Ph.D</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ---------- view slider / pemisah ---------- -->
+  <div class="view-slider-wrap">
+    <div class="view-slider" id="viewSlider">
+      <div class="view-slider-thumb" id="viewSliderThumb"></div>
+      <button class="view-slider-btn active" id="btnJadwal" onclick="switchView('jadwal')">📋 Jadwal Kuliah</button>
+      <button class="view-slider-btn" id="btnKalender" onclick="switchView('kalender')">📅 Kalender Akademik</button>
+    </div>
+  </div>
+
+  <!-- ===================== AGENDA AKADEMIK ===================== -->
+  <div class="view-panel" id="view-kalender">
+  <div class="section" id="agenda">
+    <div class="section-head">
+      <h2>Agenda akademik & perkuliahan</h2>
+      <span class="count">24 kegiatan</span>
+    </div>
+
+    <div class="agenda-timeline">
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">Asesmen SPMB Gel. 1</span><span class="agenda-date">13 Juni 2026</span></div></div>
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">SEVIM Gel. 1</span><span class="agenda-date">8–9 Agustus 2026</span></div></div>
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">Matrikulasi Pertemuan 1</span><span class="agenda-date">15 Agustus 2026</span></div></div>
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">Matrikulasi Pertemuan 2</span><span class="agenda-date">22 Agustus 2026</span></div></div>
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">Matrikulasi Pertemuan 3</span><span class="agenda-date">29 Agustus 2026</span></div></div>
+      <div class="agenda-item done"><div class="agenda-row"><span class="agenda-activity">Matrikulasi Pertemuan 4</span><span class="agenda-date">5 September 2026</span></div></div>
+
+      <div class="agenda-item done">
+        <div class="agenda-row"><span class="agenda-activity">Sosialisasi e-Campus</span><span class="agenda-date">11 September 2026</span></div>
+        <div class="agenda-note">Online / Zoom</div>
+      </div>
+      <div class="agenda-item done">
+        <div class="agenda-row"><span class="agenda-activity">Stadium General</span><span class="agenda-date">15 September 2026</span></div>
+        <div class="agenda-note">Prof. Dr. Akhsanul In'am, M.M., M.Pd., Ph.D.</div>
+      </div>
+
+      <div class="agenda-item this-week">
+        <div class="agenda-row">
+          <span class="agenda-activity">Perkuliahan <span class="blink-text">Pertemuan 1</span>
+            <span class="week-badge"><span id="countdownBadge">Menghitung…</span><button type="button" class="info-btn info-btn-onpill" onclick="event.stopPropagation(); toggleInfoBox('info-pekan-ini')" aria-label="Info pekan ini">i</button></span>
+          </span>
+          <span class="agenda-date">18–19 September 2026</span>
+        </div>
+        <div class="info-box" id="info-pekan-ini">
+          <strong>Pekan Ini</strong>
+          <p>Perkuliahan Pertemuan 1 dimulai Jumat, 18 September 2026 pukul 14.00 WIB. Harap mempersiapkan diri.</p>
+        </div>
+      </div>
+      <div class="agenda-item"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 2</span><span class="agenda-date">25–26 September 2026</span></div></div>
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 3</span><span class="agenda-date">2–3 Oktober 2026</span></div></div>
+      <div class="agenda-item"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 4</span><span class="agenda-date">9–10 Oktober 2026</span></div></div>
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 5</span><span class="agenda-date">16–17 Oktober 2026</span></div></div>
+
+      <div class="agenda-item">
+        <div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 6</span><span class="agenda-date">23–24 Oktober 2026</span></div>
+        <div class="agenda-note">Dosen tamu: Prof. Dr. Din Wahyudin, M.Pd</div>
+      </div>
+
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 7</span><span class="agenda-date">30–31 Oktober 2026</span></div></div>
+      <div class="agenda-item"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 8 · PTS</span><span class="agenda-date">6–7 November 2026</span></div></div>
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 9</span><span class="agenda-date">13–14 November 2026</span></div></div>
+      <div class="agenda-item"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 10</span><span class="agenda-date">20–21 November 2026</span></div></div>
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 11</span><span class="agenda-date">27–28 November 2026</span></div></div>
+
+      <div class="agenda-item">
+        <div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 12</span><span class="agenda-date">4–5 Desember 2026</span></div>
+        <div class="agenda-note">Perkuliahan di Rumah Perubahan: Prof. Rhenald Kasali, Ph.D</div>
+      </div>
+
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 13</span><span class="agenda-date">11–12 Desember 2026</span></div></div>
+
+      <div class="agenda-item">
+        <div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 14</span><span class="agenda-date">18–19 Desember 2026</span></div>
+        <div class="agenda-note">Seminar mahasiswa di luar kampus</div>
+      </div>
+
+      <div class="agenda-item milestone"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 15</span><span class="agenda-date">25–26 Desember 2026</span></div></div>
+      <div class="agenda-item"><div class="agenda-row"><span class="agenda-activity">Perkuliahan Pertemuan 16 · PAS</span><span class="agenda-date">1–2 Januari 2027</span></div></div>
+    </div>
+
+    <div class="notes-box">
+      <div class="notes-title">Keterangan</div>
+      <ol class="notes-list">
+        <li>
+          Perkuliahan dilaksanakan secara <em>blended learning</em>
+          <button type="button" class="info-btn" onclick="toggleInfoBox('info-blended')" aria-label="Info blended learning">i</button>
+          (daring dan luring).
+          <div class="info-box" id="info-blended">
+            <strong>Apa itu Blended Learning?</strong>
+            <p>Blended learning adalah model pembelajaran yang memadukan sesi tatap muka (luring) di kampus dengan sesi pembelajaran daring (online) melalui platform digital. Mahasiswa mengikuti sebagian pertemuan secara langsung di kelas dan sebagian lainnya secara virtual, sehingga proses perkuliahan lebih fleksibel tanpa mengurangi kualitas interaksi dengan dosen.</p>
+          </div>
+        </li>
+        <li><span class="legend-dot"></span> Warna merah dilaksanakan luring (offline) di kampus.</li>
+        <li>Jadwal sewaktu-waktu dapat berubah menyesuaikan situasi dan kondisi.</li>
+      </ol>
+    </div>
+  </div>
+  </div>
+
+  <footer class="page-footer">Prodi S2 Manajemen Pendidikan Islam · Pascasarjana Universitas Islam Bunga Bangsa Cirebon</footer>
+</div>
+
+  <!-- ---------- sticky buy bar ---------- -->
+  <div class="buy-bar">
+    <div class="buy-info">
+      <div class="buy-total">12 SKS <span style="color:var(--ink-soft); font-weight:600; font-size:13px;">/ minggu</span></div>
+      <div class="buy-sub">Terpilih: Kelas A · Semester I 2026/2027</div>
+    </div>
+    <div class="buy-actions">
+      <button class="btn btn-dark" onclick="switchView('jadwal'); document.getElementById('jadwal').scrollIntoView({behavior:'smooth'})">📋 Lihat Semua Kelas</button>
+      <div class="download-wrap">
+        <button class="btn btn-red" onclick="toggleDownloadMenu(event)">⬇ Unduh Jadwal</button>
+        <div class="download-menu" id="downloadMenu">
+          <div class="dm-label">Pilih kelas</div>
+          <button onclick="downloadICS('A'); closeDownloadMenu();">Kelas A <span class="dm-tag">.ics</span></button>
+          <button onclick="downloadICS('B'); closeDownloadMenu();">Kelas B <span class="dm-tag">.ics</span></button>
+          <button onclick="downloadICS('C'); closeDownloadMenu();">Kelas C <span class="dm-tag">.ics</span></button>
+          <hr>
+          <button onclick="downloadAllClasses(); closeDownloadMenu();">Semua Kelas (A, B, C) <span class="dm-tag">.ics</span></button>
+          <hr>
+          <a href="https://drive.google.com/file/d/1cnVvY0YddIxlyurvYTDpT1R7QqkEUcXj/view?usp=sharing" target="_blank" rel="noopener" class="dm-link" onclick="closeDownloadMenu();">Download PDF <span class="dm-tag">.pdf</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- cookie-style disclaimer ---------- -->
+  <div class="cookie-bar" id="cookieBar">
+    <span>Jadwal dapat berubah sewaktu-waktu menyesuaikan situasi dan kondisi. Lihat <a href="#keterangan">ketentuan lengkap</a>.</span>
+    <button class="close-x" onclick="document.getElementById('cookieBar').classList.add('hidden')">✕</button>
+  </div>
+
+<script>
+  let currentClass = 'A';
+
+  // Setiap "pertemuan" berlangsung Jumat + Sabtu pada tanggal berikut
+  const meetingDates = [
+    ['2026-09-18','2026-09-19'], ['2026-09-25','2026-09-26'], ['2026-10-02','2026-10-03'],
+    ['2026-10-09','2026-10-10'], ['2026-10-16','2026-10-17'], ['2026-10-23','2026-10-24'],
+    ['2026-10-30','2026-10-31'], ['2026-11-06','2026-11-07'], ['2026-11-13','2026-11-14'],
+    ['2026-11-20','2026-11-21'], ['2026-11-27','2026-11-28'], ['2026-12-04','2026-12-05'],
+    ['2026-12-11','2026-12-12'], ['2026-12-18','2026-12-19'], ['2026-12-25','2026-12-26'],
+    ['2027-01-01','2027-01-02']
+  ];
+
+  const classData = {
+    A: {
+      friday: [
+        { name: 'Educational Quality Management', start:'14:00', end:'16:30', lect: 'Assoc. Prof. Dr. Rohidin, M.Pd; Dr. H. Pendi Sutanto, M.Pd' },
+        { name: 'Change Leadership', start:'16:45', end:'19:15', lect: 'Prof. Rhenald Kasali, Ph.D (Seminar di Rumah Perubahan); Dr. H. Amin Haedari, M.Pd.' }
+      ],
+      saturday: [
+        { name: 'Philosophy of Educational Management', start:'13:00', end:'15:30', lect: 'Prof. Dr. H. Cecep Sumarna, M.Ag; Dr. Firman Nugraha, M.Ag' },
+        { name: 'Research Methodology', start:'15:45', end:'18:15', lect: 'Dr. Nur Khafid, S.Th.I, M.Sc; Assoc. Prof. Dr. Iman Subasman, M.Si' }
+      ]
+    },
+    B: {
+      friday: [
+        { name: 'Educational Quality Management', start:'14:00', end:'16:30', lect: 'Prof. Dr. Hj. Neti Karnati, M.Pd; Dr. H. Amin Haedari, M.Pd' },
+        { name: 'Philosophy of Educational Management', start:'16:45', end:'19:15', lect: 'Prof. Dr. H. Cecep Sumarna, M.Ag; Assoc. Prof. Dr. Imam Tabroni, M.Pd.I' }
+      ],
+      saturday: [
+        { name: 'Change Leadership', start:'13:00', end:'15:30', lect: 'Prof. Rhenald Kasali, Ph.D (Seminar di Rumah Perubahan); Dr. Firman Nugraha, M.Ag' },
+        { name: 'Research Methodology', start:'15:45', end:'18:15', lect: 'Dr. Nur Khafid, S.Th.I, M.Sc; Assoc. Prof. Dr. Dian Widiantari, M.Ag' }
+      ]
+    },
+    C: {
+      friday: [
+        { name: 'Philosophy of Educational Management', start:'14:00', end:'16:30', lect: 'Assoc. Prof. Dr. Imam Tabroni, M.Pd.I; Dr. H. Casta, M.Pd' },
+        { name: 'Research Methodology', start:'16:45', end:'19:15', lect: 'Dr. Nur Khafid, S.Th.I, M.Sc; Assoc. Prof. Dr. Dian Widiantari, M.Ag' }
+      ],
+      saturday: [
+        { name: 'Educational Quality Management', start:'13:00', end:'15:30', lect: "Prof. Dr. Hj. Neti Karnati, M.Pd; Dr. H. Asro'i, M.Pd" },
+        { name: 'Change Leadership', start:'15:45', end:'18:15', lect: 'Prof. Rhenald Kasali, Ph.D (Seminar di Rumah Perubahan); Dr. H. Aceng Abdul Azis, M.Pd; Hj. Khodijah Huliyah, M.Si, Ph.D' }
+      ]
+    }
+  };
+
+  // Agenda kampus non-kelas (berlaku untuk semua kelas)
+  const campusAgenda = [
+    { date: '2026-06-13', title: 'Asesmen SPMB Gel. 1' },
+    { date: '2026-08-08', endDate: '2026-08-09', title: 'SEVIM Gel. 1' },
+    { date: '2026-08-15', title: 'Matrikulasi Pertemuan 1' },
+    { date: '2026-08-22', title: 'Matrikulasi Pertemuan 2' },
+    { date: '2026-08-29', title: 'Matrikulasi Pertemuan 3' },
+    { date: '2026-09-05', title: 'Matrikulasi Pertemuan 4' },
+    { date: '2026-09-11', title: 'Sosialisasi e-Campus', note: 'Online / Zoom' },
+    { date: '2026-09-15', title: 'Stadium General', note: "Prof. Dr. Akhsanul In'am, M.M., M.Pd., Ph.D." }
+  ];
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function icsDateTime(dateStr, timeStr){
+    const [h, m] = timeStr.split(':');
+    return dateStr.replace(/-/g,'') + 'T' + pad(+h) + pad(+m) + '00';
+  }
+
+  function icsEscape(str){
+    return String(str).replace(/,/g,'\\,').replace(/;/g,'\\;');
+  }
+
+  function toDateOnly(dateStr){ return dateStr.replace(/-/g,''); }
+
+  function addOneDay(dateStr){
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  let uidCounter = 0;
+
+  function classEventLines(letter){
+    const cls = classData[letter];
+    const lines = [];
+    meetingDates.forEach((pair, idx) => {
+      const [fri, sat] = pair;
+      cls.friday.forEach(course => {
+        uidCounter++;
+        lines.push('BEGIN:VEVENT');
+        lines.push('UID:kelas' + letter + '-jumat-' + idx + '-' + uidCounter + '@ecampus-uibbc');
+        lines.push('DTSTART:' + icsDateTime(fri, course.start));
+        lines.push('DTEND:' + icsDateTime(fri, course.end));
+        lines.push('SUMMARY:' + icsEscape(course.name + ' (Kelas ' + letter + ')'));
+        lines.push('DESCRIPTION:' + icsEscape('Dosen: ' + course.lect + ' | Pertemuan ' + (idx+1)));
+        lines.push('END:VEVENT');
+      });
+      cls.saturday.forEach(course => {
+        uidCounter++;
+        lines.push('BEGIN:VEVENT');
+        lines.push('UID:kelas' + letter + '-sabtu-' + idx + '-' + uidCounter + '@ecampus-uibbc');
+        lines.push('DTSTART:' + icsDateTime(sat, course.start));
+        lines.push('DTEND:' + icsDateTime(sat, course.end));
+        lines.push('SUMMARY:' + icsEscape(course.name + ' (Kelas ' + letter + ')'));
+        lines.push('DESCRIPTION:' + icsEscape('Dosen: ' + course.lect + ' | Pertemuan ' + (idx+1)));
+        lines.push('END:VEVENT');
+      });
+    });
+    return lines;
+  }
+
+  function campusAgendaLines(){
+    const lines = [];
+    campusAgenda.forEach(item => {
+      uidCounter++;
+      const start = toDateOnly(item.date);
+      const end = toDateOnly(item.endDate ? addOneDay(item.endDate) : addOneDay(item.date));
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:agenda-' + uidCounter + '@ecampus-uibbc');
+      lines.push('DTSTART;VALUE=DATE:' + start);
+      lines.push('DTEND;VALUE=DATE:' + end);
+      lines.push('SUMMARY:' + icsEscape(item.title));
+      if (item.note) lines.push('DESCRIPTION:' + icsEscape(item.note));
+      lines.push('END:VEVENT');
+    });
+    return lines;
+  }
+
+  function saveICS(lines, filename){
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadICS(letter){
+    const target = letter || currentClass;
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//e-Campus Pascasarjana UIBBC//Jadwal Kuliah//ID',
+      'CALSCALE:GREGORIAN',
+      ...classEventLines(target),
+      ...campusAgendaLines(),
+      'END:VCALENDAR'
+    ];
+    saveICS(lines, 'jadwal-kelas-' + target + '-s2mpi.ics');
+  }
+
+  function downloadAllClasses(){
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//e-Campus Pascasarjana UIBBC//Jadwal Kuliah//ID',
+      'CALSCALE:GREGORIAN',
+      ...classEventLines('A'),
+      ...classEventLines('B'),
+      ...classEventLines('C'),
+      ...campusAgendaLines(),
+      'END:VCALENDAR'
+    ];
+    saveICS(lines, 'jadwal-semua-kelas-s2mpi.ics');
+  }
+
+  function toggleDownloadMenu(evt){
+    evt.stopPropagation();
+    document.getElementById('downloadMenu').classList.toggle('open');
+  }
+
+  function closeDownloadMenu(){
+    document.getElementById('downloadMenu').classList.remove('open');
+  }
+
+  document.addEventListener('click', function(e){
+    const menu = document.getElementById('downloadMenu');
+    const wrap = document.querySelector('.download-wrap');
+    if (menu && menu.classList.contains('open') && !wrap.contains(e.target)){
+      closeDownloadMenu();
+    }
+  });
+
+  function toggleInfoBox(id){
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  /* ---------- live countdown: Pertemuan 1 ---------- */
+  function updatePertemuan1Countdown(){
+    const el = document.getElementById('countdownBadge');
+    if (!el) return;
+    const target = new Date('2026-09-18T14:00:00+07:00');
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0){
+      el.textContent = 'Sedang berlangsung';
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const pad = n => String(n).padStart(2, '0');
+
+    el.textContent = (days > 0 ? days + 'h ' : '') + pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+  }
+  updatePertemuan1Countdown();
+  setInterval(updatePertemuan1Countdown, 1000);
+
+  function switchView(view){
+    const jadwalPanel = document.getElementById('view-jadwal');
+    const kalenderPanel = document.getElementById('view-kalender');
+    const slider = document.getElementById('viewSlider');
+    const btnJadwal = document.getElementById('btnJadwal');
+    const btnKalender = document.getElementById('btnKalender');
+
+    if (view === 'kalender'){
+      jadwalPanel.classList.remove('active');
+      kalenderPanel.classList.add('active');
+      slider.classList.add('kalender');
+      btnKalender.classList.add('active');
+      btnJadwal.classList.remove('active');
+    } else {
+      kalenderPanel.classList.remove('active');
+      jadwalPanel.classList.add('active');
+      slider.classList.remove('kalender');
+      btnJadwal.classList.add('active');
+      btnKalender.classList.remove('active');
+    }
+  }
+
+  function toggleLect(btn){
+    const card = btn.closest('.course-card');
+    const label = btn.querySelector('.btn-label');
+    const isOpen = card.classList.toggle('open');
+    label.textContent = isOpen ? 'Sembunyikan dosen' : 'Lihat dosen';
+  }
+
+  function showClass(letter, btn){
+    currentClass = letter;
+    document.querySelectorAll('.class-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + letter).classList.add('active');
+    document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector('.buy-sub').textContent = 'Terpilih: Kelas ' + letter + ' · Semester I 2026/2027';
+  }
+</script>
+
+</body>
+</html>
